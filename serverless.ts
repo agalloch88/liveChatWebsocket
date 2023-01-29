@@ -3,7 +3,7 @@ import functions from "./serverless/functions";
 import dynamoResources from "./serverless/dynamoResources";
 
 const serverlessConfiguration: AWS = {
-  service: "reminderapp",
+  service: "livechatwebsocket",
   frameworkVersion: "3",
   plugins: ["serverless-esbuild", "serverless-iam-roles-per-function"],
   provider: {
