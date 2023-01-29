@@ -30,16 +30,6 @@ const serverlessConfiguration: AWS = {
       NODE_OPTIONS: "--enable-source-maps --stack-trace-limit=1000",
 
       roomConnectionTable: "${self:custom.roomConnectionTable}",
-      baseUrl: {
-        "Fn::Join": [
-          "",
-          [
-            "https://",
-            { Ref: "HttpApi" },
-            ".execute-api.${self:provider.region}.amazonaws.com",
-          ],
-        ],
-      },
     },
   },
   // import the function via paths
@@ -51,7 +41,7 @@ const serverlessConfiguration: AWS = {
   },
   package: { individually: true },
   custom: {
-    roomConnectionTable: "${sls:stage}-reminder-table",
+    roomConnectionTable: "${sls:stage}-room-connection-table",
     esbuild: {
       bundle: true,
       minify: false,
