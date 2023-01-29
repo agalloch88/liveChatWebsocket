@@ -1,10 +1,10 @@
 import type { AWS } from "@serverless/typescript";
 
 const dynamoResources: AWS["resources"]["Resources"] = {
-  reminderTable: {
+  roomConnectionTable: {
     Type: "AWS::DynamoDB::Table",
     Properties: {
-      TableName: "${self:custom.reminderTable}",
+      TableName: "${self:custom.roomConnectionTable}",
       AttributeDefinitions: [
         {
           AttributeName: "id",

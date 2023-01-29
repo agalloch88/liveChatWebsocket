@@ -16,8 +16,8 @@ const serverlessConfiguration: AWS = {
         Effect: "Allow",
         Action: "dynamodb:*",
         Resource: [
-          "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.reminderTable}",
-          "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.reminderTable}/index/index1",
+          "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.roomConnectionTable}",
+          "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.roomConnectionTable}/index/index1",
         ],
       },
     ],
@@ -29,7 +29,7 @@ const serverlessConfiguration: AWS = {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       NODE_OPTIONS: "--enable-source-maps --stack-trace-limit=1000",
 
-      reminderTable: "${self:custom.reminderTable}",
+      roomConnectionTable: "${self:custom.roomConnectionTable}",
       baseUrl: {
         "Fn::Join": [
           "",
@@ -51,7 +51,7 @@ const serverlessConfiguration: AWS = {
   },
   package: { individually: true },
   custom: {
-    reminderTable: "${sls:stage}-reminder-table",
+    roomConnectionTable: "${sls:stage}-reminder-table",
     esbuild: {
       bundle: true,
       minify: false,

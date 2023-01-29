@@ -6,7 +6,7 @@ import { dynamo } from "@libs/dynamo";
 export const handler = async (event: APIGatewayProxyEvent) => {
   try {
     const body = JSON.parse(event.body);
-    const tableName = process.env.reminderTable;
+    const tableName = process.env.roomConnectionTable;
     const { email, phoneNumber, reminder, reminderDate } = body;
 
     // call validateInputs function with params from the body, store in variable validationErrors
@@ -35,10 +35,14 @@ export const handler = async (event: APIGatewayProxyEvent) => {
 
     await dynamo.write(data, tableName);
 
-    return formatJSONResponse({ data: {
-      message: `Reminder created for ${userId} on ${new Date(reminderDate).toDateString()}`,
-      id: data.id,
-    } });
+    return formatJSONResponse({
+      data: {
+        message: `Reminder created for ${userId} on ${new Date(
+          reminderDate
+        ).toDateString()}`,
+        id: data.id,
+      },
+    });
   } catch (error) {
     console.log(error);
     return formatJSONResponse({
