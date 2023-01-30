@@ -2,6 +2,7 @@ import { formatJSONResponse } from "@libs/apiGateway";
 import { APIGatewayProxyEvent } from "aws-lambda";
 import { v4 as uuid } from "uuid";
 import { dynamo } from "@libs/dynamo";
+import { UserConnectionRecord } from 'src/types/dynamo';
 
 export const handler = async (event: APIGatewayProxyEvent) => {
   try {
@@ -21,7 +22,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
 
     const roomCode = uuid().slice(0, 8);
 
-    const data = {
+    const data: UserConnectionRecord = {
       id: connectionId,
       pk: roomCode,
       sk: connectionId,
@@ -30,6 +31,15 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       stage,
       roomCode,
     }
+
+    await dynamo.write(data, tableName);
+
+    await websocket.send({
+      data: {
+        message: `You are now connected to room ${roomCode}`,
+        type: "info",
+      }
+    })
 
     return formatJSONResponse({});
   } catch (error) {
