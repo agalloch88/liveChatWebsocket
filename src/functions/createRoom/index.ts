@@ -19,7 +19,17 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       return formatJSONResponse({});
     }
 
-    
+    const roomCode = uuid().slice(0, 8);
+
+    const data = {
+      id: connectionId,
+      pk: roomCode,
+      sk: connectionId,
+      name: body.name,
+      domainName,
+      stage,
+      roomCode,
+    }
 
     return formatJSONResponse({});
   } catch (error) {
