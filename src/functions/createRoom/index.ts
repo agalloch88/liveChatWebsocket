@@ -2,7 +2,8 @@ import { formatJSONResponse } from "@libs/apiGateway";
 import { APIGatewayProxyEvent } from "aws-lambda";
 import { v4 as uuid } from "uuid";
 import { dynamo } from "@libs/dynamo";
-import { UserConnectionRecord } from 'src/types/dynamo';
+import { UserConnectionRecord } from "src/types/dynamo";
+import { websocket } from "@libs/websocket";
 
 export const handler = async (event: APIGatewayProxyEvent) => {
   try {
@@ -15,8 +16,11 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         data: {
           message: "Please provide a name on createRoom",
           type: "err",
-        }
-      })
+        },
+        connectionId,
+        domainName,
+        stage,
+      });
       return formatJSONResponse({});
     }
 
@@ -30,7 +34,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       domainName,
       stage,
       roomCode,
-    }
+    };
 
     await dynamo.write(data, tableName);
 
@@ -38,8 +42,11 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       data: {
         message: `You are now connected to room ${roomCode}`,
         type: "info",
-      }
-    })
+      },
+      connectionId,
+      domainName,
+      stage,
+    });
 
     return formatJSONResponse({});
   } catch (error) {
