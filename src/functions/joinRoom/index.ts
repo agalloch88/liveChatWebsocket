@@ -36,13 +36,27 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       });
       return formatJSONResponse({});
     }
-
+    
     const roomUsers = await dynamo.query({
       pkValue: roomCode,
       tableName,
       index: 'index1',
       limit: 1,
     })
+
+    if (roomUsers.length === 0) {
+      await websocket.send({
+        data: {
+          message: "No room with that code exists. Please create a room.",
+          type: "err",
+        },
+        connectionId,
+        domainName,
+        stage,
+      });
+      return formatJSONResponse({});
+    }
+
     
     // create a new record to send to the database
     const data: UserConnectionRecord = {
