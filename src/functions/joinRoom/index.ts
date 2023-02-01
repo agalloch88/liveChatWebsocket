@@ -63,7 +63,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       id: connectionId,
       pk: roomCode,
       sk: connectionId,
-      name: body.name,
+      name,
       domainName,
       stage,
       roomCode,
