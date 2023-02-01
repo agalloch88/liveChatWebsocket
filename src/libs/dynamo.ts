@@ -44,6 +44,7 @@ export const dynamo = {
     skValue,
     skKey = "sk",
     sortAscending = true,
+    limit
   }: {
     tableName: string;
     index: string;
@@ -52,6 +53,7 @@ export const dynamo = {
     skValue?: string;
     skKey?: string;
     sortAscending?: boolean;
+    limit?: number;
   }) => {
     // If there is a sort key, add it to the query
     const skExpression = skValue ? ` and ${skKey} = :rangeValue` : "";
@@ -63,6 +65,7 @@ export const dynamo = {
       ExpressionAttributeValues: {
         ":hashValue": pkValue,
       },
+      Limit: limit,
     };
     // If there is a sort key expression, add it to the params
     if (skValue) {
