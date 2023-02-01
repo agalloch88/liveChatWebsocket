@@ -9,8 +9,9 @@ export const handler = async (event: APIGatewayProxyEvent) => {
   try {
     const body = JSON.parse(event.body);
     const tableName = process.env.roomConnectionTable;
+    // destructuring the requestContext object
     const { connectionId, domainName, stage } = event.requestContext;
-
+    // if the name is not provided, send an error message
     if (!body.name) {
       await websocket.send({
         data: {
@@ -23,9 +24,9 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       });
       return formatJSONResponse({});
     }
-
+    // generate a random room code
     const roomCode = uuid().slice(0, 8);
-
+    // create a new record to send to the database
     const data: UserConnectionRecord = {
       id: connectionId,
       pk: roomCode,
@@ -35,9 +36,9 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       stage,
       roomCode,
     };
-
+    // write the record to the database
     await dynamo.write(data, tableName);
-
+    // send a message to the user that they have successfully connected
     await websocket.send({
       data: {
         message: `You are now connected to room ${roomCode}`,
