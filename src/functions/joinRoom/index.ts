@@ -1,21 +1,20 @@
 import { formatJSONResponse } from "@libs/apiGateway";
 import { APIGatewayProxyEvent } from "aws-lambda";
-import { v4 as uuid } from "uuid";
 import { dynamo } from "@libs/dynamo";
 import { UserConnectionRecord } from "src/types/dynamo";
 import { websocket } from "@libs/websocket";
 
 export const handler = async (event: APIGatewayProxyEvent) => {
   try {
-    const body = JSON.parse(event.body);
+    const {name, roomCode} = JSON.parse(event.body);
     const tableName = process.env.roomConnectionTable;
     // destructuring the requestContext object
     const { connectionId, domainName, stage } = event.requestContext;
     // if the name is not provided, send an error message
-    if (!body.name) {
+    if (!name) {
       await websocket.send({
         data: {
-          message: "Please provide a name on createRoom",
+          message: "Please provide a name on joinRoom",
           type: "err",
         },
         connectionId,
@@ -24,8 +23,27 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       });
       return formatJSONResponse({});
     }
-    // generate a random room code
-    const roomCode = uuid().slice(0, 8);
+
+    if (!roomCode) {
+      await websocket.send({
+        data: {
+          message: "Please provide a roomCode on joinRoom",
+          type: "err",
+        },
+        connectionId,
+        domainName,
+        stage,
+      });
+      return formatJSONResponse({});
+    }
+
+    const roomUsers = await dynamo.query({
+      pkValue: roomCode,
+      tableName,
+      index: 'index1',
+      limit: 1,
+    })
+    
     // create a new record to send to the database
     const data: UserConnectionRecord = {
       id: connectionId,
