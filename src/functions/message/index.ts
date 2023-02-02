@@ -14,7 +14,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     if (!message) {
       await websocket.send({
         data: {
-          message: "Please provide a name on joinRoom",
+          message: "Please provide a message on message actions",
           type: "err",
         },
         connectionId,
@@ -24,18 +24,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       return formatJSONResponse({});
     }
 
-    if (!roomCode) {
-      await websocket.send({
-        data: {
-          message: "Please provide a roomCode on joinRoom",
-          type: "err",
-        },
-        connectionId,
-        domainName,
-        stage,
-      });
-      return formatJSONResponse({});
-    }
+    const existingUser = await dynamo.get(connectionId, tableName);
 
     const roomUsers = await dynamo.query({
       pkValue: roomCode,
