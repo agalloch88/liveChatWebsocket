@@ -3,6 +3,7 @@ import { APIGatewayProxyEvent } from "aws-lambda";
 import { dynamo } from "@libs/dynamo";
 import { UserConnectionRecord } from "src/types/dynamo";
 import { websocket } from "@libs/websocket";
+import { UserConnectionRecord } from '../../types/dynamo.d';
 
 export const handler = async (event: APIGatewayProxyEvent) => {
   try {
@@ -24,7 +25,22 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       return formatJSONResponse({});
     }
 
-    const existingUser = await dynamo.get(connectionId, tableName);
+    const existingUser = await dynamo.get<UserConnectionRecord>(connectionId, tableName);
+
+    if (!existingUser) {
+      await websocket.send({
+        data: {
+          message: "Please create or join a room",
+          type: "err",
+        },
+        connectionId,
+        domainName,
+        stage,
+      });
+      return formatJSONResponse({});
+    }
+
+    const { name, roomCode } = existingUser;
 
     const roomUsers = await dynamo.query({
       pkValue: roomCode,
