@@ -23,7 +23,7 @@ export const dynamo = {
     return data;
   },
   // Read data from a table
-  get: async (id: string, tableName: string) => {
+  get: async <T = Record<string, any>>(id: string, tableName: string) => {
     const params: GetCommandInput = {
       TableName: tableName,
       Key: {
@@ -33,7 +33,7 @@ export const dynamo = {
     const command = new GetCommand(params);
     const response = await dyanmoClient.send(command);
 
-    return response.Item;
+    return response.Item as T;
   },
   // Query a table
   query: async ({
