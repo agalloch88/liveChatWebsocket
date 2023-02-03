@@ -3,7 +3,6 @@ import { APIGatewayProxyEvent } from "aws-lambda";
 import { dynamo } from "@libs/dynamo";
 import { UserConnectionRecord } from "src/types/dynamo";
 import { websocket } from "@libs/websocket";
-import { UserConnectionRecord } from '../../types/dynamo.d';
 
 export const handler = async (event: APIGatewayProxyEvent) => {
   try {
@@ -25,7 +24,10 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       return formatJSONResponse({});
     }
 
-    const existingUser = await dynamo.get<UserConnectionRecord>(connectionId, tableName);
+    const existingUser = await dynamo.get<UserConnectionRecord>(
+      connectionId,
+      tableName
+    );
 
     if (!existingUser) {
       await websocket.send({
@@ -40,7 +42,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       return formatJSONResponse({});
     }
 
-    const { name, roomCode } = existingUser;
+    const { roomCode } = existingUser;
 
     const roomUsers = await dynamo.query<UserConnectionRecord>({
       pkValue: roomCode,
@@ -48,7 +50,23 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       index: "index1",
     });
 
-    
+    const messagePromiseArray = roomUsers.filter(() => {
+
+    }).map((user) => {
+      const { id: connectionId, domainName, stage } = user;
+
+      return websocket.send({
+        data: {
+          message,
+          from: existingUser.name,
+        },
+        connectionId,
+        domainName,
+        stage,
+      });
+    });
+
+    await Promise.all(messagePromiseArray);
 
     return formatJSONResponse({});
   } catch (error) {
