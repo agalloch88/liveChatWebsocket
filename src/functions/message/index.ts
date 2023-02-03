@@ -50,8 +50,8 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       index: "index1",
     });
 
-    const messagePromiseArray = roomUsers.filter(() => {
-
+    const messagePromiseArray = roomUsers.filter((targetUser) => {
+      return targetUser.id !== existingUser.id;
     }).map((user) => {
       const { id: connectionId, domainName, stage } = user;
 
