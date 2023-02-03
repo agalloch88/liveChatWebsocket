@@ -36,7 +36,7 @@ export const dynamo = {
     return response.Item as T;
   },
   // Query a table
-  query: async ({
+  query: async <T = Record<string, any>> ({
     tableName,
     index,
     pkValue,
@@ -74,6 +74,6 @@ export const dynamo = {
 
     const command = new QueryCommand(params);
     const res = await dyanmoClient.send(command);
-    return res.Items;
+    return res.Items as T[];
   },
 };
