@@ -42,48 +42,13 @@ export const handler = async (event: APIGatewayProxyEvent) => {
 
     const { name, roomCode } = existingUser;
 
-    const roomUsers = await dynamo.query({
+    const roomUsers = await dynamo.query<UserConnectionRecord>({
       pkValue: roomCode,
       tableName,
       index: "index1",
-      limit: 1,
     });
 
-    if (roomUsers.length === 0) {
-      await websocket.send({
-        data: {
-          message: "No room with that code exists. Please create a room.",
-          type: "err",
-        },
-        connectionId,
-        domainName,
-        stage,
-      });
-      return formatJSONResponse({});
-    }
-
-    // create a new record to send to the database
-    const data: UserConnectionRecord = {
-      id: connectionId,
-      pk: roomCode,
-      sk: connectionId,
-      name,
-      domainName,
-      stage,
-      roomCode,
-    };
-    // write the record to the database
-    await dynamo.write(data, tableName);
-    // send a message to the user that they have successfully connected
-    await websocket.send({
-      data: {
-        message: `You are now connected to room ${roomCode}`,
-        type: "info",
-      },
-      connectionId,
-      domainName,
-      stage,
-    });
+    
 
     return formatJSONResponse({});
   } catch (error) {
