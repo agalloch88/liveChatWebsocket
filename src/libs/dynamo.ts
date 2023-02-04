@@ -38,7 +38,7 @@ export const dynamo = {
     return response.Item as T;
   },
   // Query a table
-  query: async <T = Record<string, any>> ({
+  query: async <T = Record<string, any>>({
     tableName,
     index,
     pkValue,
@@ -46,7 +46,7 @@ export const dynamo = {
     skValue,
     skKey = "sk",
     sortAscending = true,
-    limit
+    limit,
   }: {
     tableName: string;
     index: string;
@@ -83,11 +83,11 @@ export const dynamo = {
     const params: DeleteCommandInput = {
       TableName: tableName,
       Key: {
-        id
-      }
-    }
+        id,
+      },
+    };
     const command = new DeleteCommand(params);
 
     return dyanmoClient.send(command);
-  }
+  },
 };

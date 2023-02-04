@@ -1,14 +1,12 @@
 import { formatJSONResponse } from "@libs/apiGateway";
 import { APIGatewayProxyEvent } from "aws-lambda";
 import { dynamo } from "@libs/dynamo";
-import { UserConnectionRecord } from "src/types/dynamo";
-import { websocket } from "@libs/websocket";
 
 export const handler = async (event: APIGatewayProxyEvent) => {
   try {
     const tableName = process.env.roomConnectionTable;
     // destructuring the requestContext object
-    const { connectionId} = event.requestContext;
+    const { connectionId } = event.requestContext;
     
     await dynamo.delete(connectionId, tableName);
 
