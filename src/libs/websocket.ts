@@ -23,19 +23,26 @@ export const websocket = {
     connectionId,
     domainName,
     stage,
+    client,
   }: {
     data: {
       message?: string;
       type?: string;
       from?: string;
     };
-    stage: string;
-    domainName: string;
+    stage?: string;
+    domainName?: string;
     connectionId: string;
+    client?: ApiGatewayManagementApiClient;
   }) => {
-    const client = new ApiGatewayManagementApiClient({
-      endpoint: `https://${domainName}/${stage}`,
-    });
+    if (!client) {
+      if (!domainName || !stage) {
+        throw Error(
+          "domainName and stage are required if client is not provided"
+        );
+      }
+      client = websocket.createClient({ domainName, stage });
+    }
 
     const params: PostToConnectionCommandInput = {
       ConnectionId: connectionId,
