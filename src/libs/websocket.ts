@@ -5,11 +5,24 @@ import {
 } from "@aws-sdk/client-apigatewaymanagementapi";
 
 export const websocket = {
+  createClient: ({
+    domainName,
+    stage,
+  }: {
+    domainName: string;
+    stage: string;
+  }) => {
+    const client = new ApiGatewayManagementApiClient({
+      endpoint: `https://${domainName}/${stage}`,
+    });
+    return client;
+  },
+
   send: ({
     data,
     connectionId,
     domainName,
-    stage
+    stage,
   }: {
     data: {
       message?: string;
@@ -21,13 +34,13 @@ export const websocket = {
     connectionId: string;
   }) => {
     const client = new ApiGatewayManagementApiClient({
-        endpoint: `https://${domainName}/${stage}`,
-    })
+      endpoint: `https://${domainName}/${stage}`,
+    });
 
     const params: PostToConnectionCommandInput = {
-        ConnectionId: connectionId,
-        Data: JSON.stringify(data) as any,
-    }
+      ConnectionId: connectionId,
+      Data: JSON.stringify(data) as any,
+    };
 
     const command = new PostToConnectionCommand(params);
 
