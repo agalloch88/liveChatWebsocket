@@ -50,10 +50,12 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       index: "index1",
     });
 
+    const websocketClient = websocket.createClient({ domainName, stage });
+
     const messagePromiseArray = roomUsers.filter((targetUser) => {
       return targetUser.id !== existingUser.id;
     }).map((user) => {
-      const { id: connectionId, domainName, stage } = user;
+      const { id: connectionId } = user;
 
       return websocket.send({
         data: {
@@ -61,8 +63,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
           from: existingUser.name,
         },
         connectionId,
-        domainName,
-        stage,
+        client: websocketClient,
       });
     });
 
