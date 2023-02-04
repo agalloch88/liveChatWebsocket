@@ -10,6 +10,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     // destructuring the requestContext object
     const { connectionId} = event.requestContext;
     
+    await dynamo.delete(connectionId, tableName);
 
     return formatJSONResponse({});
   } catch (error) {
